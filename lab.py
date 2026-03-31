@@ -61,7 +61,12 @@ def get_embeddings(texts: list[str], model: str = DEFAULT_EMBEDDING_MODEL) -> li
     attribute is a list of objects, each with an `.embedding` field.
     """
     # TODO: Call the API and return the embeddings.
-    raise NotImplementedError
+    response = client.embeddings.create(model = model, input = texts, encoding_format = "float")
+    output = [response.data[i].embedding for i in range(len(response.data))]
+
+    return output
+
+    # raise NotImplementedError
 
 
 # ---------------------------------------------------------------------------
@@ -83,7 +88,11 @@ def mean_pool(embeddings: list[list[float]]) -> np.ndarray:
     text), mean-pooling collapses them into one representation.
     """
     # TODO: Compute and return the mean-pooled vector.
-    raise NotImplementedError
+    embeddings_arr = np.array(embeddings)
+
+    return np.mean(embeddings_arr, axis = 0)
+
+    # raise NotImplementedError
 
 
 # ---------------------------------------------------------------------------
@@ -107,7 +116,15 @@ def cosine_similarity(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
     (dot product, norm, etc.).
     """
     # TODO: Implement cosine similarity from scratch.
-    raise NotImplementedError
+    dot_product = vec_a @ vec_b
+    norm_a = np.linalg.norm(vec_a)
+    norm_b = np.linalg.norm(vec_b)
+
+    if norm_a == 0 or norm_b == 0:
+        return 0
+    
+    return dot_product / (norm_a * norm_b)
+    # raise NotImplementedError
 
 
 # ---------------------------------------------------------------------------
@@ -136,7 +153,16 @@ def top_k_similar(
     Hint: Use your cosine_similarity function from Part 3.
     """
     # TODO: Compute similarities and return the top-k results.
-    raise NotImplementedError
+    output = []
+    for i in range(len(corpus_vecs)): 
+        similarity_score = cosine_similarity(query_vec, np.array(corpus_vecs[i]))
+        output.append((corpus_texts[i], similarity_score))
+
+    output.sort(key = lambda x: x[1], reverse = True)
+
+    return output[:k]
+
+    # raise NotImplementedError
 
 
 # ---------------------------------------------------------------------------
